@@ -13,6 +13,7 @@ struct Timer
     time_point_t mStartTime;
     time_point_t mStopTime;
     elapsed_time_t mElapsedTime;
+    elapsed_time_t mKernelTime;
     
     void Start()
     {
@@ -20,11 +21,12 @@ struct Timer
         mStartTime = clock_t::now();
     }
     
-    void Stop(const std::string& msg)
+    double Stop(const std::string& msg)
     {
         mStopTime = clock_t::now();
         std::chrono::duration<double, std::milli> elapsedTime = mStopTime - mStartTime;
         std::cout << "[" << msg << elapsedTime.count() << "ms]" << std::endl;
+        return elapsedTime.count();
     }
 
     void Reset()
@@ -37,10 +39,12 @@ struct Timer
         mStartTime = clock_t::now();
     }
 
-    void Pause()
+    double Pause()
     {
         mStopTime = clock_t::now();
-        mElapsedTime += mStopTime-mStartTime;
+        mKernelTime = mStopTime-mStartTime;
+        mElapsedTime += mKernelTime;
+        return mKernelTime.count();
     }
 
     void Print(const std::string& msg)
