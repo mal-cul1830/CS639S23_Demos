@@ -4,6 +4,8 @@
 #include "mkl.h"
 
 #include <iostream>
+#include <vector>
+using namespace std;
 
 void DirectSparseSolver(
     CSRMatrix& matrix,
@@ -22,10 +24,7 @@ void DirectSparseSolver(
     MKL_INT i;
     float ddum;               // Scalar dummy (PARDISO needs it)
     MKL_INT idum;             // Integer dummy (PARDISO needs it)
-    std::vector<int> perm(n);
-    for(int i = 1; i <= n ; ++i)
-        perm[i - 1] = i;
-    
+
     // Set-up PARDISO control parameters
 
     for ( i = 0; i < 64; i++ )
@@ -60,6 +59,13 @@ void DirectSparseSolver(
     mnum = 1;             // Which factorization to use.
     msglvl = 1;           // Print statistical information in file
     error = 0;            // Initialize error flag
+
+    vector<MKL_INT> perm(n);
+
+    for(int i = 0; i < n ; ++i)
+        perm[i] = i + 1;
+
+    vector<
 
     // Initialize the internal solver memory pointer. This is only
     // necessary for the FIRST call of the PARDISO solver
@@ -96,7 +102,7 @@ void DirectSparseSolver(
     iparm[7] = 0;         // Max numbers of iterative refinement steps
     PARDISO (pt, &maxfct, &mnum, &mtype, &phase, &n,
         matrix.GetValues(), matrix.GetRowOffsets(), matrix.GetColumnIndices(),
-        &idum, &nrhs, iparm, &msglvl, static_cast<void*>(&f[0][0][0]), &x[0][0][0], &error);
+        &perm[0], &nrhs, iparm, &msglvl, static_cast<void*>(&f[0][0][0]), &x[0][0][0], &error);
     if ( error != 0 )
         throw std::runtime_error("PARDISO error during solution phase");
 
