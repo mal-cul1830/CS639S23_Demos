@@ -65,8 +65,6 @@ void DirectSparseSolver(
     for(int i = 0; i < n ; ++i)
         perm[i] = i + 1;
 
-    vector<
-
     // Initialize the internal solver memory pointer. This is only
     // necessary for the FIRST call of the PARDISO solver
     for ( i = 0; i < 64; i++ )
@@ -92,7 +90,8 @@ void DirectSparseSolver(
     PARDISO (pt, &maxfct, &mnum, &mtype, &phase, &n,
         matrix.GetValues(), matrix.GetRowOffsets(), matrix.GetColumnIndices(),
         &perm[0], &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
-    if ( error != 0 )
+    if ( error != 0 ){
+        std::cout << error << std::endl;
         throw std::runtime_error("PARDISO error during numerical factorization");
 
     std::cout << "Factorization completed ... " << std::endl;
