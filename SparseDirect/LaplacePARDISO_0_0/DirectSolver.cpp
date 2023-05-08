@@ -24,6 +24,12 @@ void DirectSparseSolver(
     MKL_INT i;
     float ddum;               // Scalar dummy (PARDISO needs it)
     MKL_INT idum;             // Integer dummy (PARDISO needs it)
+    MKL_INT perm[n];
+
+    for( i = 0; i < n; i++ ) 
+    {
+        perm[i] = i + 1;
+    } 
 
     // Set-up PARDISO control parameters
 
@@ -60,7 +66,7 @@ void DirectSparseSolver(
     msglvl = 1;           // Print statistical information in file
     error = 0;            // Initialize error flag
 
-    vector<MKL_INT> perm(n);
+    vector<int> perm(n);
 
     for(int i = 0; i < n ; ++i)
         perm[i] = i + 1;
@@ -89,11 +95,11 @@ void DirectSparseSolver(
     phase = 22;
     PARDISO (pt, &maxfct, &mnum, &mtype, &phase, &n,
         matrix.GetValues(), matrix.GetRowOffsets(), matrix.GetColumnIndices(),
-        &perm[0], &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
+        perm, &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
     if ( error != 0 ){
         std::cout << error << std::endl;
         throw std::runtime_error("PARDISO error during numerical factorization");
-
+    }
     std::cout << "Factorization completed ... " << std::endl;
 
     // Back substitution and iterative refinement
@@ -101,7 +107,7 @@ void DirectSparseSolver(
     iparm[7] = 0;         // Max numbers of iterative refinement steps
     PARDISO (pt, &maxfct, &mnum, &mtype, &phase, &n,
         matrix.GetValues(), matrix.GetRowOffsets(), matrix.GetColumnIndices(),
-        &perm[0], &nrhs, iparm, &msglvl, static_cast<void*>(&f[0][0][0]), &x[0][0][0], &error);
+        perm, &nrhs, iparm, &msglvl, static_cast<void*>(&f[0][0][0]), &x[0][0][0], &error);
     if ( error != 0 )
         throw std::runtime_error("PARDISO error during solution phase");
 
@@ -111,7 +117,7 @@ void DirectSparseSolver(
     phase = -1;           // Release internal memory
     PARDISO (pt, &maxfct, &mnum, &mtype, &phase, &n,
         &ddum, matrix.GetRowOffsets(), matrix.GetColumnIndices(),
-        &perm[0], &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
+        perm, &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
 
     if (writeOutput) WriteAsImage("x", x, 0, 0, XDIM/2);
 }
