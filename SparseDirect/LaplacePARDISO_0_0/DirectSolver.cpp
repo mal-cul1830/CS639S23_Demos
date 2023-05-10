@@ -11,11 +11,12 @@ void DirectSparseSolver(
     CSRMatrix& matrix,
     float (&x)[XDIM][YDIM][ZDIM],
     float (&f)[XDIM][YDIM][ZDIM],
-    const bool writeOutput)
+    const bool writeOutput,
+    int k)
 {
     MKL_INT n = matrix.mSize; // Matrix size
     MKL_INT mtype = 2;        // Real symmetric positive definite matrix
-    MKL_INT nrhs = 1;         // Number of right hand sides
+    MKL_INT nrhs = k;         // Number of right hand sides
     void *pt[64];             // Internal solver memory pointer pt
                               // should be "int" when using 32-bit architectures, or "long int"
                               // for 64-bit architectures. void* should be OK in both cases
@@ -25,6 +26,17 @@ void DirectSparseSolver(
     float ddum;               // Scalar dummy (PARDISO needs it)
     MKL_INT idum;             // Integer dummy (PARDISO needs it)
     MKL_INT perm[n];
+
+    using array_t = float (&) [k][XDIM][YDIM][ZDIM];
+    float *xRaw = new float [k*XDIM*YDIM*ZDIM];
+    float *bRaw = new float [k*XDIM*YDIM*ZDIM];
+    array_t xMultiple = reinterpret_cast<array_t>(*xRaw);
+    array_t bMultiple = reinterpret_cast<array_t>(*bRaw);
+
+    for(int l = 0; l < k; ++l){
+        Copy(xMultiple[l], x);
+        Copy(bMultiple[l], f);
+    }
 
     for( i = 0; i < n; i++ ) 
     {
@@ -103,7 +115,7 @@ void DirectSparseSolver(
     iparm[7] = 0;         // Max numbers of iterative refinement steps
     PARDISO (pt, &maxfct, &mnum, &mtype, &phase, &n,
         matrix.GetValues(), matrix.GetRowOffsets(), matrix.GetColumnIndices(),
-        perm, &nrhs, iparm, &msglvl, static_cast<void*>(&f[0][0][0]), &x[0][0][0], &error);
+        perm, &nrhs, iparm, &msglvl, static_cast<void*>(&bMultiple[0][0][0][0]), &xMultiple[0][0][0][0], &error);
     if ( error != 0 )
         throw std::runtime_error("PARDISO error during solution phase");
 

@@ -31,7 +31,8 @@ int main(int argc, char *argv[])
     }
 
     // Call PARDISO solver
-    DirectSparseSolver(matrix, x, f);
+    for(int k = 1; k <= 100; k*=10)
+        DirectSparseSolver(matrix, x, f, k);
 
     return 0;
 }

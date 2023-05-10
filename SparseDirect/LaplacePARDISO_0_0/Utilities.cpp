@@ -15,6 +15,15 @@ void Clear(float (&x)[XDIM][YDIM][ZDIM])
         x[i][j][k] = 0.;
 }
 
+void Copy(float (&x)[XDIM][YDIM][ZDIM], float (&y)[XDIM][YDIM][ZDIM])
+{
+#pragma omp parallel for
+    for (int i = 0; i < XDIM; i++)
+    for (int j = 0; j < YDIM; j++)
+    for (int k = 0; k < ZDIM; k++)
+        x[i][j][k] = y[i][j][k];
+}
+
 void InitializeProblem(float (&x)[XDIM][YDIM][ZDIM], float (&b)[XDIM][YDIM][ZDIM]){
 
     // Start by zeroing out x and b
