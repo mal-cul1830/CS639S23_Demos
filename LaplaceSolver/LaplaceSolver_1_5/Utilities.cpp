@@ -5,14 +5,21 @@
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
+#ifndef DO_NOT_USE_MKL
+#include <mkl.h>
+#endif
 
 void Clear(float (&x)[XDIM][YDIM][ZDIM])
 {
+#ifdef DO_NOT_USE_MKL
 #pragma omp parallel for
     for (int i = 0; i < XDIM; i++)
     for (int j = 0; j < YDIM; j++)
     for (int k = 0; k < ZDIM; k++)
         x[i][j][k] = 0.;
+#else
+    std::memset(x, 0, XDIM * YDIM * ZDIM * sizeof(float));
+#endif
 }
 
 void InitializeProblem(float (&x)[XDIM][YDIM][ZDIM], float (&b)[XDIM][YDIM][ZDIM]){

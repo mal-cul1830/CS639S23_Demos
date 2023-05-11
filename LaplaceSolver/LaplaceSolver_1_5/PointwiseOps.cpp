@@ -18,11 +18,18 @@ void Saxpy(const float (&x)[XDIM][YDIM][ZDIM], const float (&y)[XDIM][YDIM][ZDIM
     float (&z)[XDIM][YDIM][ZDIM],
     const float scale)
 {
+    const int N = XDIM;
+
+#ifdef DO_NOT_USE_MKL
 #pragma omp parallel for
     for (int i = 0; i < XDIM; i++)
     for (int j = 0; j < YDIM; j++)
     for (int k = 0; k < ZDIM; k++)
         z[i][j][k] = x[i][j][k] * scale + y[i][j][k];
+#else
+    cblas_saxpy(N, scale, x, 1, y, 1);
+    cblas_saxpy(N, 1.0, z, 1, y, 1);
+#endif
 }
 
 void Saxpy(const float (&x)[XDIM][YDIM][ZDIM], float (&y)[XDIM][YDIM][ZDIM],
