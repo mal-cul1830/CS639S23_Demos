@@ -27,9 +27,9 @@ void DirectSparseSolver(
     MKL_INT idum;             // Integer dummy (PARDISO needs it)
     MKL_INT perm[n];
 
-    using array_t = float (&) [k][XDIM][YDIM][ZDIM];
-    float *xRaw = new float [k*XDIM*YDIM*ZDIM];
-    float *bRaw = new float [k*XDIM*YDIM*ZDIM];
+    using array_t = float (*) [XDIM][YDIM][ZDIM];
+    float *xRaw = new float [XDIM*YDIM*ZDIM];
+    float *bRaw = new float [XDIM*YDIM*ZDIM];
     array_t xMultiple = reinterpret_cast<array_t>(*xRaw);
     array_t bMultiple = reinterpret_cast<array_t>(*bRaw);
 
@@ -52,7 +52,7 @@ void DirectSparseSolver(
     iparm[0] = 1;         // No solver default
     iparm[1] = 3;         // Parallel nested dissection
     iparm[3] = 0;         // No iterative-direct algorithm
-    iparm[4] = 1;         // No user fill-in reducing permutation
+    iparm[4] = 0;         // No user fill-in reducing permutation
     iparm[5] = 0;         // Write solution into x
     iparm[6] = 0;         // Not in use
     iparm[7] = 0;         // Max numbers of iterative refinement steps
@@ -102,7 +102,7 @@ void DirectSparseSolver(
     phase = 22;
     PARDISO (pt, &maxfct, &mnum, &mtype, &phase, &n,
         matrix.GetValues(), matrix.GetRowOffsets(), matrix.GetColumnIndices(),
-        perm, &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
+        &perm[0], &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
 
     if ( error != 0 ){
         std::cout << error << std::endl;
@@ -115,7 +115,7 @@ void DirectSparseSolver(
     iparm[7] = 0;         // Max numbers of iterative refinement steps
     PARDISO (pt, &maxfct, &mnum, &mtype, &phase, &n,
         matrix.GetValues(), matrix.GetRowOffsets(), matrix.GetColumnIndices(),
-        perm, &nrhs, iparm, &msglvl, static_cast<void*>(&bMultiple[0][0][0][0]), &xMultiple[0][0][0][0], &error);
+        &perm[0], &nrhs, iparm, &msglvl, bMultiple[0], xMultiple[0], &error);
     if ( error != 0 )
         throw std::runtime_error("PARDISO error during solution phase");
 
@@ -125,7 +125,7 @@ void DirectSparseSolver(
     phase = -1;           // Release internal memory
     PARDISO (pt, &maxfct, &mnum, &mtype, &phase, &n,
         &ddum, matrix.GetRowOffsets(), matrix.GetColumnIndices(),
-        perm, &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
+        &perm[0], &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
 
-    if (writeOutput) WriteAsImage("x", x, 0, 0, XDIM/2);
+    if (writeOutput) WriteAsImage("x", xMultiple, 0, 0, XDIM/2);
 }
