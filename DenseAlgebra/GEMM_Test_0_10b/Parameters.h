@@ -12,7 +12,6 @@
 #define MATRIX_SIZE_K 4092
 #endif
 
-#ifndef FACTOR
-#define FACTOR 64
+#ifndef BLOCK_SIZE
+#define BLOCK_SIZE 64
 #endif
-

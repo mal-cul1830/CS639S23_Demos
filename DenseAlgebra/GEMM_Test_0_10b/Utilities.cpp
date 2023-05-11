@@ -34,7 +34,7 @@ void InitializeMatrices(float (&A)[MATRIX_SIZE_M][MATRIX_SIZE_N],float (&B)[MATR
 float MatrixMaxDifference(const float (&A)[MATRIX_SIZE_M][MATRIX_SIZE_K],const float (&B)[MATRIX_SIZE_M][MATRIX_SIZE_K])
 {
     float result = 0.;
-    for (int i = 0; i < MATRIX_SIZE_K; i++)
+    for (int i = 0; i < MATRIX_SIZE_M; i++)
     for (int j = 0; j < MATRIX_SIZE_K; j++)
         result = std::max( result, std::abs( A[i][j] - B[i][j] ) );
     return result;
