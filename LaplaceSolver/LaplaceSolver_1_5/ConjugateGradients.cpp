@@ -8,6 +8,7 @@
 #include <iostream>
 
 extern Timer timerInt;
+Timer timerLoop;
 extern int iterations;
 
 void ConjugateGradients(
@@ -17,7 +18,7 @@ void ConjugateGradients(
     float (&p)[XDIM][YDIM][ZDIM],
     float (&r)[XDIM][YDIM][ZDIM],
     float (&z)[XDIM][YDIM][ZDIM],
-    float (&t)[6][17],
+    float (&t)[6][18],
     const bool writeIterations)
 {
     // Algorithm : Line 2
@@ -32,6 +33,7 @@ void ConjugateGradients(
     timerInt.Restart(); Copy(r, p); t[3][4] += timerInt.Pause();
     timerInt.Restart(); float rho=InnerProduct(p, r); t[4][4] += timerInt.Pause();
 
+    timerLoop.Restart();
     // Beginning of loop from Line 5
     for(int k=0;;k++)
     {
@@ -52,6 +54,8 @@ void ConjugateGradients(
             timerInt.Restart(); Saxpy(p, x, x, alpha); t[1][9] += timerInt.Pause();
             std::cout << "Conjugate Gradients terminated after " << k << " iterations; residual norm (nu) = " << nu << std::endl;
             if (writeIterations) WriteAsImage("x", x, k, 0, 127);
+            float time = timerLoop.Stop("Time Taken for all Iterations : ");
+            std::cout<< "Time taken per iteration : "<<time/k<<std::endl;
             return;
         }
 
@@ -72,7 +76,7 @@ void ConjugateGradients(
         // The version above uses the fact that the destination vector is the same
         // as the second input vector -- i.e. Saxpy(x, y, c) performs
         // the operation y += c * x
-        timerInt.Restart(); Saxpy(p, r, p, beta); t[1][16] += timerInt.Pause();
+        timerInt.Restart(); Saxpy(p, r, p, beta); t[1][17] += timerInt.Pause();
 
         if (writeIterations) WriteAsImage("x", x, k, 0, 127);
     }

@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include <mkl.h>
-#endif
+
 
 void Clear(float (&x)[XDIM][YDIM][ZDIM])
 {

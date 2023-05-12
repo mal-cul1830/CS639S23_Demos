@@ -2,7 +2,7 @@
 
 // #define DO_NOT_USE_MKL
 #ifndef DO_NOT_USE_MKL
-#define DO_NOT_USE_MKL = true
+//#define DO_NOT_USE_MKL = true
 #include <mkl.h>
 #endif
 

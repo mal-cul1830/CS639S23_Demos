@@ -4,6 +4,7 @@
 #include "Utilities.h"
 
 Timer timerInt;
+Timer timerTotal;
 int iterations;
 
 int main(int argc, char *argv[])
@@ -38,9 +39,11 @@ int main(int argc, char *argv[])
     }
 
     // Call Conjugate Gradients algorithm
-    timerInt.Reset();
+    timerTotal.Reset();
     {	
+        timerTotal.Start();
         ConjugateGradients(matrix, x, f, p, r, z, t, false);
+        timerTotal.Stop("Total Time for Conjugate Gradients : ");
         const char* kernel[6]= {"ComputeLaplacian", "Saxpy", "Norm",
         "Copy", "InnerProduct", "Compressed"};
 
@@ -51,9 +54,19 @@ int main(int argc, char *argv[])
                     (t[i][j])/((iterations-1)*int(j > 5) + 1*int(j < 13)) <<" ms" <<std::endl;
             }
         }
-    }
 
-    timerInt.Print("Total Laplacian Time : ");
+        for(int i = 0; i < 6; ++i) {
+            float sum = 0;
+            int k = 0;
+            for(int j = 5; j <= 16; ++j){
+                if(t[i][j]){
+                    sum += t[i][j];
+                    k += 1;
+                }
+            }
+            std::cout << "Average Time for " << sum/k;
+        }
+    }
 
     return 0;
 }
