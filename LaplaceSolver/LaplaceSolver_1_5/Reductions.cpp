@@ -24,6 +24,7 @@ float Norm(const float (&x)[XDIM][YDIM][ZDIM])
     int k = pos % ZDIM;
     int j = (pos / ZDIM) % YDIM;
     int i = pos / (ZDIM * YDIM);
+    std::cout<<"x["<""i<<", "<<j<<", "<<k<<"] = "<<x[i][j][k]<<"\n";
     result = x[i][j][k];
 #endif
     return (float) result;
