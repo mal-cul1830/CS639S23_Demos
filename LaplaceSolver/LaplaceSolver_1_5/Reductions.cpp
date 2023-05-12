@@ -16,11 +16,15 @@ float Norm(const float (&x)[XDIM][YDIM][ZDIM])
     for (int k = 1; k < ZDIM-1; k++)
         result = std::max(result, std::abs(x[i][j][k]));
 #else
-    result = cblas_isamax(
+    int pos = cblas_isamax(
         XDIM * YDIM * ZDIM,
         &x[0][0][0],
         1
     );
+    int k = pos % ZDIM;
+    int j = (pos / ZDIM) % YDIM;
+    int i = pos / (ZDIM * YDIM);
+    result = x[i][j][k];
 #endif
     return (float) result;
 }
