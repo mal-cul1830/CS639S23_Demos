@@ -1,10 +1,11 @@
 #include "Reductions.h"
 #include "Utilities.h"
 
+#include <iostream>
 #include <algorithm>
 #ifndef DO_NOT_USE_MKL
 #include <mkl.h>
-#endif 
+#endif
 
 float Norm(const float (&x)[XDIM][YDIM][ZDIM])
 {
@@ -24,8 +25,7 @@ float Norm(const float (&x)[XDIM][YDIM][ZDIM])
     int k = pos % ZDIM;
     int j = (pos / ZDIM) % YDIM;
     int i = pos / (ZDIM * YDIM);
-    std::cout<<"x["<""i<<", "<<j<<", "<<k<<"] = "<<x[i][j][k]<<"\n";
-    result = x[i][j][k];
+    result = abs(x[i][j][k]);
 #endif
     return (float) result;
 }
