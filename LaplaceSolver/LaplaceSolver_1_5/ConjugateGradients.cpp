@@ -18,7 +18,7 @@ void ConjugateGradients(
     float (&r)[XDIM][YDIM][ZDIM],
     float (&z)[XDIM][YDIM][ZDIM],
     float (&t)[6][17],
-    const bool writeIterations)
+    const bool writeIterations = true);
 {
     // Algorithm : Line 2
     timerInt.Restart(); ComputeLaplacian(matrix, x, z); t[0][2] += timerInt.Pause();

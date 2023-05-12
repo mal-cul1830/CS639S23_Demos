@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     // Call Conjugate Gradients algorithm
     timerInt.Reset();
     {	
-        ConjugateGradients(matrix, x, f, p, r, z, false);
+        ConjugateGradients(matrix, x, f, p, r, z, t, false);
         const char* kernel[6]= {"ComputeLaplacian", "Saxpy", "Norm",
         "Copy", "InnerProduct", "Compressed"};
 
