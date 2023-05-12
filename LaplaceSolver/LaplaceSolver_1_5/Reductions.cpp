@@ -1,4 +1,5 @@
 #include "Reductions.h"
+#include "Utilities.h"
 
 #include <algorithm>
 #ifndef DO_NOT_USE_MKL

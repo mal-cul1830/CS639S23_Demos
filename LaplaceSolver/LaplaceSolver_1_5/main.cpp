@@ -3,8 +3,8 @@
 #include "Timer.h"
 #include "Utilities.h"
 
-Timer timerLaplacian;
-Timer timerSaxpy;
+Timer timerInt;
+int iterations;
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +23,9 @@ int main(int argc, char *argv[])
     array_t z = reinterpret_cast<array_t>(*zRaw);
     
     CSRMatrix matrix;
+    using array_t_1 = float (&) [6][17];
+    float *tRaw = new float [6*17];
+    array_t_1 t = reinterpret_cast<array_t_1>(*tRaw);
 
     // Initialization
     {
@@ -31,15 +34,26 @@ int main(int argc, char *argv[])
         InitializeProblem(x, f);
         matrix = BuildLaplacianMatrix(); // This takes a while ...
         timer.Stop("Initialization : ");
+        iterations = 0;
     }
 
     // Call Conjugate Gradients algorithm
+    timerInt.Reset();
     {	
-        timerLaplacian.Reset(); timerSaxpy.Reset();
         ConjugateGradients(matrix, x, f, p, r, z, false);
-        timerLaplacian.Print("Total Laplacian Time : ");
-        timerSaxpy.Print("Total Saxpy Time : ");
+        const char* kernel[6]= {"ComputeLaplacian", "Saxpy", "Norm",
+        "Copy", "InnerProduct", "Compressed"};
+
+        for(int i = 0; i < 6; ++i) {
+            for(int j = 1; j <= 16; ++j){
+                if(t[i][j])
+                    std::cout << kernel[i] << ", on Line "<<j<<" time : " << 
+                    (t[i][j])/((iterations-1)*int(j > 5) + 1*int(j < 13)) <<" ms" <<std::endl;
+            }
+        }
     }
+
+    timerInt.Print("Total Laplacian Time : ");
 
     return 0;
 }

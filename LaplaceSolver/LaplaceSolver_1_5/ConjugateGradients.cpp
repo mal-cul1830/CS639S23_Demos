@@ -7,8 +7,8 @@
 
 #include <iostream>
 
-extern Timer timerLaplacian;
-extern Timer timerSaxpy;
+extern Timer timerInt;
+extern int iterations;
 
 void ConjugateGradients(
     CSRMatrix& matrix,
@@ -17,47 +17,49 @@ void ConjugateGradients(
     float (&p)[XDIM][YDIM][ZDIM],
     float (&r)[XDIM][YDIM][ZDIM],
     float (&z)[XDIM][YDIM][ZDIM],
+    float (&t)[6][17],
     const bool writeIterations)
 {
     // Algorithm : Line 2
-    timerLaplacian.Restart(); ComputeLaplacian(matrix, x, z); timerLaplacian.Pause();
-    Saxpy(z, f, r, -1);
-    float nu = Norm(r);
+    timerInt.Restart(); ComputeLaplacian(matrix, x, z); t[0][2] += timerInt.Pause();
+    timerInt.Restart(); Saxpy(z, f, r, -1); t[1][2] += timerInt.Pause();
+    timerInt.Restart(); float nu = Norm(r); t[2][2] += timerInt.Pause();
 
     // Algorithm : Line 3
     if (nu < nuMax) return;
         
     // Algorithm : Line 4
-    Copy(r, p);
-    float rho=InnerProduct(p, r);
+    timerInt.Restart(); Copy(r, p); t[3][4] += timerInt.Pause();
+    timerInt.Restart(); float rho=InnerProduct(p, r); t[4][4] += timerInt.Pause();
         
     // Beginning of loop from Line 5
     for(int k=0;;k++)
     {
         std::cout << "Residual norm (nu) after " << k << " iterations = " << nu << std::endl;
-
+        ++iterations;
         // Algorithm : Line 6
-        timerLaplacian.Restart(); ComputeLaplacian(matrix, p, z); timerLaplacian.Pause();
-        float sigma=InnerProduct(p, z);
+
+        timerInt.Restart(); ComputeLaplacian(matrix, p, z); t[0][6] += timerInt.Pause();
+        timerInt.Restart(); float sigma=InnerProduct(p, z); t[4][6] += timerInt.Pause();
 
         // Algorithm : Line 7
         float alpha=rho/sigma;
 
         // Algorithm : Line 8
-        Saxpy(z, r, r, -alpha);
-        nu=Norm(r);
+        timerInt.Restart(); Saxpy(z, r, r, -alpha); t[1][8] += timerInt.Pause();
+        timerInt.Restart(); nu=Norm(r); t[2][8] += timerInt.Pause();
 
         // Algorithm : Lines 9-12
         if (nu < nuMax || k == kMax) {
-            Saxpy(p, x, x, alpha);
+            timerInt.Restart(); Saxpy(p, x, x, alpha); t[1][9] += timerInt.Pause();
             std::cout << "Conjugate Gradients terminated after " << k << " iterations; residual norm (nu) = " << nu << std::endl;
-            if (writeIterations) WriteAsImage("x", x, k, 0, 127);
+            timerInt.Restart(); if (writeIterations) WriteAsImage("x", x, k, 0, 127); t[5][9] += timerInt.Pause();
             return;
         }
             
         // Algorithm : Line 13
-        Copy(r, z);
-        float rho_new = InnerProduct(z, r);
+        timerInt.Restart(); Copy(r, z); t[3][13] += timerInt.Pause();
+        timerInt.Restart(); float rho_new = InnerProduct(z, r); t[4][13] += timerInt.Pause();
 
         // Algorithm : Line 14
         float beta = rho_new/rho;
@@ -66,15 +68,14 @@ void ConjugateGradients(
         rho=rho_new;
 
         // Algorithm : Line 16
-        timerSaxpy.Restart(); Saxpy(p, x, alpha); timerSaxpy.Pause(); 
+        timerInt.Restart(); Saxpy(p, x, alpha); t[1][16] += timerInt.Pause();
         // Note: this used to be 
         // Saxpy(p, x, x, alpha);
         // The version above uses the fact that the destination vector is the same
         // as the second input vector -- i.e. Saxpy(x, y, c) performs
         // the operation y += c * x
-        Saxpy(p, r, p, beta);
+        timerInt.Restart(); Saxpy(p, r, p, beta); t[1][16] += timerInt.Pause();
 
-        if (writeIterations) WriteAsImage("x", x, k, 0, 127);
+        timerInt.Restart(); if (writeIterations) WriteAsImage("x", x, k, 0, 127); t[5][9] += timerInt.Pause();
     }
-
 }
