@@ -59,12 +59,13 @@ int main(int argc, char *argv[])
             float sum = 0;
             int k = 0;
             for(int j = 5; j <= 16; ++j){
-                if(t[i][j]){
+                if(t[i][j] > 0){
                     sum += t[i][j];
                     k += 1;
                 }
             }
-            std::cout << "Average Time for " << sum/k;
+            if(sum > 0)
+                std::cout << "Average Time for " <<kernel[i]<< sum/k <<"\n";
         }
     }
 
