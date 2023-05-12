@@ -2,6 +2,7 @@
 #include "Utilities.h"
 
 #ifndef DO_NOT_USE_MKL
+#define DO_NOT_USE_MKL = true
 #include <mkl.h>
 #endif
 

@@ -5,7 +5,6 @@
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
-#ifndef DO_NOT_USE_MKL
 #include <mkl.h>
 #endif
 
