@@ -1,8 +1,8 @@
 #pragma once
 
-#define XDIM 256
-#define YDIM 256
-#define ZDIM 256
+#define XDIM 64
+#define YDIM 64
+#define ZDIM 64
 
 constexpr int kMax = 1000;
 constexpr float nuMax = 1e-3;

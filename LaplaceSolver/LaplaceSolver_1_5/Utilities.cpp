@@ -11,22 +11,11 @@
 
 void Clear(float (&x)[XDIM][YDIM][ZDIM])
 {
-#ifdef DO_NOT_USE_MKL
 #pragma omp parallel for
     for (int i = 0; i < XDIM; i++)
     for (int j = 0; j < YDIM; j++)
     for (int k = 0; k < ZDIM; k++)
         x[i][j][k] = 0.;
-#else
-    cblas_saxpy(
-        XDIM * YDIM * ZDIM, // Length of vectors
-        0,                  // Scale factor
-        &x[0][0][0],        // Input vector x, in operation y := x * scale + y
-        1,                  // Use step 1 for x
-        &y[0][0][0],        // Input/output vector y, in operation y := x * scale + y
-        1                   // Use step 2 for y
-    );
-#endif
 }
 
 void InitializeProblem(float (&x)[XDIM][YDIM][ZDIM], float (&b)[XDIM][YDIM][ZDIM]){

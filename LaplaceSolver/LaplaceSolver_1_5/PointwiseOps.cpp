@@ -37,6 +37,7 @@ void Saxpy(const float (&x)[XDIM][YDIM][ZDIM], const float (&y)[XDIM][YDIM][ZDIM
     for (int k = 0; k < ZDIM; k++)
         z[i][j][k] = x[i][j][k] * scale + y[i][j][k];
 #else
+    Clear(z);
     cblas_saxpy(
         XDIM * YDIM * ZDIM, // Length of vectors
         scale,              // Scale factor
@@ -47,7 +48,7 @@ void Saxpy(const float (&x)[XDIM][YDIM][ZDIM], const float (&y)[XDIM][YDIM][ZDIM
     );
     cblas_saxpy(
         XDIM * YDIM * ZDIM, // Length of vectors
-        1,              // Scale factor
+        1,                  // Scale factor
         &y[0][0][0],        // Input vector x, in operation y := x * scale + y
         1,                  // Use step 1 for x
         &z[0][0][0],        // Input/output vector y, in operation y := x * scale + y
