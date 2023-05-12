@@ -18,7 +18,14 @@ void Clear(float (&x)[XDIM][YDIM][ZDIM])
     for (int k = 0; k < ZDIM; k++)
         x[i][j][k] = 0.;
 #else
-    std::memset(x, 0, XDIM * YDIM * ZDIM * sizeof(float));
+    cblas_saxpy(
+        XDIM * YDIM * ZDIM, // Length of vectors
+        0,                  // Scale factor
+        &x[0][0][0],        // Input vector x, in operation y := x * scale + y
+        1,                  // Use step 1 for x
+        &y[0][0][0],        // Input/output vector y, in operation y := x * scale + y
+        1                   // Use step 2 for y
+    );
 #endif
 }
 
