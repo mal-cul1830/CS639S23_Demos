@@ -1,6 +1,6 @@
 #include "PointwiseOps.h"
+#include "Utilities.h"
 
-// #define DO_NOT_USE_MKL
 #ifndef DO_NOT_USE_MKL
 #include <mkl.h>
 #endif

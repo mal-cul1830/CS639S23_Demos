@@ -39,7 +39,7 @@ float InnerProduct(const float (&x)[XDIM][YDIM][ZDIM], const float (&y)[XDIM][YD
     for (int k = 1; k < ZDIM-1; k++)
         result += (double) x[i][j][k] * (double) y[i][j][k];
 #else
-    result = cblas_ssdot(
+    result = cblas_sdot(
         XDIM * YDIM * ZDIM,
         &x[0][0][0],
         1,
